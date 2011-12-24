@@ -1,0 +1,28 @@
+{
+  "name": "pico",
+  "version": "0.0.1",
+  "description": "pico game server",
+  "keywords": ["game", "server", "simple"],
+  "maintainers": [
+  {
+    "name": "Darren Liew",
+    "email": "ldarren@gmail.com",
+    "web": "http://d5me-web.s3-website-us-east-1.amazonaws.com" 
+  } 
+  ],
+  "dependencies": {
+    "mongodb": "1.2",
+    "noxmox": "0.9.8",
+    "formidable": "0.9.8",
+  },
+  "implements": ["pico"],
+  "os": ["linux"],
+  "cpu": ["x86", "x86_64"],
+  "engines": ["v8", "node"],
+  "scripts": {
+    "install": "install.js",
+    "uninstall": "uninstall.js",
+    "build": "build.js",
+    "test": "test.js" 
+  }
+}
