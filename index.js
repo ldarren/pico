@@ -4,16 +4,16 @@
 var
   fs = require('fs');
 
-function loadModules(context, config, keys, done){
-  if (0 == keys.length) { done(context); return; }
-  var key = keys.shift();
-  require(__dirname+'/lib/'+key).init(config[key],function(err, module){
-    context[key] = module;
-    loadModules(context, config, keys, done);
+function loadModules(context, config, keys, cb){
+  if (0 == keys.length) { cb(context); return; }
+  var key = keys.shift(), value = config[key];
+  require(__dirname+'/lib/'+key).init(value,function(err, module){
+    context[value.id ? value.id : key] = module;
+    loadModules(context, config, keys, cb);
   });
 }
 
-exports.createContext = function (args, done){
+exports.createContext = function (args, cb){
   var context = {};
   var config = {};
   for(var i=0, j=args.length; i<j; ++i){
@@ -21,7 +21,7 @@ exports.createContext = function (args, done){
       case '-h':
       {
         console.log('usage: node index.js -c CONFIG_FILE');
-        done(context);
+        cb(context);
         //process.exit(0);
         break;
       }
@@ -33,7 +33,7 @@ exports.createContext = function (args, done){
           config = JSON.parse(data);
           loadModules(context, config, Object.keys(config), function(context){
             context.config = config;
-            done(context);
+            cb(context);
           });
         });
         break;
