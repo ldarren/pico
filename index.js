@@ -45,7 +45,7 @@ exports.init = function(cfg, cb){
 
 exports.createContext = function (args, cb){
   if (cluster.isMaster){
-    for(var i=0,j=2/*require('os').cpus().length*/;i<j;++i){
+    for(var i=0,j=require('os').cpus().length;i<j;++i){
       cluster.fork();
     }
     cluster.on('death', function(worker) {
