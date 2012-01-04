@@ -24,25 +24,6 @@ function _loadElements(context, elements, cb){
   });
 }
 
-exports.init = function(cfg, cb){
-  if (cluster.isMaster){
-    for(var i=0,j=require('os').cpus().length;i<j;++i){
-      cluster.fork();
-    }
-    cluster.on('death', function(worker) {
-      console.log('worker ' + worker.pid + ' died. restart...');
-      cluster.fork();
-    });
-  }else{
-    var web = http.createServer(process);
-    web.listen(cfg.port, cfg.host, function(){
-      console.log('Web @ http://' + (cfg.host || '127.0.0.1') + ':' + cfg.port.toString() + '/');
-      web.setRoute = setRoute;
-      cb(null, web);
-    });
-  }
-}
-
 exports.createContext = function (args, cb){
   if (cluster.isMaster){
     for(var i=0,j=require('os').cpus().length;i<j;++i){
@@ -84,10 +65,9 @@ exports.createContext = function (args, cb){
   }
 }
 
-exports.run = function(context){
+exports.setup = function(context){
   var root = path.dirname(process.argv[1]);
   _loadElements(context, require(root+'/models').all, function(){
-    //require.paths.push('../models/');
     _loadElements(context, require(root+'/actions').all, function(){
     });
   });
