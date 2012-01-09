@@ -4,10 +4,17 @@
   , "keywords" :        ["async","game","server"]
   , "version" :         "0.0.1-12-26"
   , "author" :          "Darren Liew <ldarren@gmail.com>"
-  , "repository" :    { "type" :  "git"
-  , "url" :   "http://github.com/ldarren/pico.git" }
-  , "bugs" :          { "mail" :  "ldarren@gmail.com"
-  , "url" :   "http://github.com/ldarren/pico/issues" }
+  , "repository" :    { 
+    "type" :  "git"
+    , "url" :   "http://github.com/ldarren/pico.git" }
+  , "dependencies":   {
+    "mongodb": ""
+    , "noxmox": ""
+    , "formidable": ""
+    , "memcached": ""}
+  , "bugs" :          { 
+    "mail" :  "ldarren@gmail.com"
+    , "url" :   "http://github.com/ldarren/pico/issues" }
   , "os" :            [ "linux"
                       , "darwin"
                       , "freebsd" ]
