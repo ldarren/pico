@@ -1,0 +1,10 @@
+{
+  "name" : "sample_logic",
+  "version" : "v0.0.1",
+  "scripts" : {
+    "preinstall" : "node-waf configure && node-waf build",
+    "preuninstall" : "rm -rf build/*"
+  },
+
+  "main" : "build/Release/sample_logic.node"
+}
