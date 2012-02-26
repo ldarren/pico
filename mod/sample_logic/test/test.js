@@ -3,4 +3,6 @@ var
   logic = new sampleLogic.Logic();
 
 logic.message = "Darren";
-console.log(logic.read());
+logic.read({first:'Darren', last:'Liew'}, function(msg){
+  console.log(msg);
+});
