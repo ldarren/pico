@@ -67,8 +67,8 @@ exports.createContext = function (args, cb){
 
 exports.setup = function(context){
   var root = path.dirname(process.argv[1]);
-  _loadElements(context, require(root+'/models').all, function(){
-    _loadElements(context, require(root+'/actions').all, function(){
+  _loadElements(context, require(root+'/models'), function(){
+    _loadElements(context, require(root+'/actions'), function(){
     });
   });
 }
