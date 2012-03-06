@@ -7,7 +7,7 @@ var
   cluster = require('cluster');
 
 function _loadModules(context, config, keys, cb){
-  if (0 == keys.length) { cb(context); return; }
+  if (0 == keys.length) { cb(null, context); return; }
   var key = keys.shift(), value = config[key];
   require(__dirname+'/lib/'+key).init(value,function(err, module){
     context[value.id ? value.id : key] = module;
@@ -16,7 +16,7 @@ function _loadModules(context, config, keys, cb){
 }
 
 function _loadElements(context, elements, cb){
-  if (0 == elements.length) { cb(); return; }
+  if (0 == elements.length) { cb(null, null); return; }
   var element = elements.shift();
   element.setup(context,function(){
     _loadElements(context, elements, cb);
@@ -34,7 +34,8 @@ exports.createContext = function (args, cb){
     });
   }else{
     var 
-      config = {},
+      config = null,
+      error = null,
       context = {};
 
     for(var i=0, j=args.length; i<j; ++i){
@@ -42,7 +43,6 @@ exports.createContext = function (args, cb){
         case '-h':
         {
           console.log('usage: node index.js -c CONFIG_FILE');
-          cb(context);
           //process.exit(0);
           break;
         }
@@ -50,21 +50,27 @@ exports.createContext = function (args, cb){
         {
           var cfgFile = args[++i];
           config = require(cfgFile);
-          _loadModules(context, config, Object.keys(config), function(context){
+          _loadModules(context, config, Object.keys(config), function(err, context){
+            error = err;
             context.config = config;
-            cb(context);
           });
           break;
         }
       }
     }
+    if (null == config){
+      err = 'usage: node index.js -c CONFIG_FILE';
+    }
+    return cb(err, context);
   }
 }
 
-exports.setup = function(context){
+exports.setup = function(context, cb){
   var root = path.dirname(process.argv[1]);
-  _loadElements(context, require(root+'/models'), function(){
-    _loadElements(context, require(root+'/actions'), function(){
+  _loadElements(context, require(root+'/models'), function(err, elements){
+    if (err) return cb(err, elements);
+    _loadElements(context, require(root+'/actions'), function(err, elements){
+      if (err) return cb(err, elements);
     });
   });
 }
