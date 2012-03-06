@@ -2,7 +2,6 @@
  * main module. read config, init module
  */
 var
-  fs = require('fs'),
   path = require('path'),
   util = require('util'),
   cluster = require('cluster');
@@ -49,14 +48,11 @@ exports.createContext = function (args, cb){
         }
         case '-c':
         {
-          var cfg_file = args[++i];
-          fs.readFile(cfg_file, function (err, data){
-            if (err) throw err;
-            config = JSON.parse(data);
-            _loadModules(context, config, Object.keys(config), function(context){
-              context.config = config;
-              cb(context);
-            });
+          var cfgFile = args[++i];
+          config = require(cfgFile);
+          _loadModules(context, config, Object.keys(config), function(context){
+            context.config = config;
+            cb(context);
           });
           break;
         }
