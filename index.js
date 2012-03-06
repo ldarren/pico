@@ -17,7 +17,7 @@ function _loadModules(context, config, keys, cb){
 
 function _loadElements(context, elements, cb){
   if (0 == elements.length) { cb(null, null); return; }
-  var element = elements.shift();
+  var element = elements.pop();
   element.setup(context,function(){
     _loadElements(context, elements, cb);
   });
@@ -36,7 +36,7 @@ exports.createContext = function (args, cb){
     var 
       config = null,
       error = null,
-      context = {};
+      context = {homeDir:path.dirname(args[1])+'/'};
 
     for(var i=0, j=args.length; i<j; ++i){
       switch(args[i]){
@@ -48,25 +48,27 @@ exports.createContext = function (args, cb){
         }
         case '-c':
         {
-          var cfgFile = args[++i];
-          config = require(cfgFile);
+          var
+            cfgFile = args[++i];
+          config = require(context.homeDir+cfgFile);
           _loadModules(context, config, Object.keys(config), function(err, context){
             error = err;
             context.config = config;
+            return cb(error, context);
           });
           break;
         }
       }
     }
     if (null == config){
-      err = 'usage: node index.js -c CONFIG_FILE';
+      error = 'usage: node index.js -c CONFIG_FILE';
+      return cb(error, context);
     }
-    return cb(err, context);
   }
 }
 
 exports.setup = function(context, cb){
-  var root = path.dirname(process.argv[1]);
+  var root = context.homeDir;
   _loadElements(context, require(root+'/models'), function(err, elements){
     if (err) return cb(err, elements);
     _loadElements(context, require(root+'/actions'), function(err, elements){
