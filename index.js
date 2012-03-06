@@ -8,9 +8,9 @@ var
 
 function _loadModules(context, config, keys, cb){
   if (0 == keys.length) { cb(null, context); return; }
-  var key = keys.shift(), value = config[key];
-  require(__dirname+'/lib/'+key).init(value,function(err, module){
-    context[value.id ? value.id : key] = module;
+  var key = keys.pop(), val = config[key];
+  require(__dirname+'/lib/'+val.mod).init(val,function(err, module){
+    context[key] = module;
     _loadModules(context, config, keys, cb);
   });
 }
