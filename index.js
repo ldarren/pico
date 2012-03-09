@@ -38,6 +38,10 @@ exports.createContext = function (args, cb){
       error = null,
       context = {homeDir:path.dirname(args[1])+'/'};
 
+    process.on('uncaughtException', function(err){
+      console.log("PICO Uncaught Exception:\n %s", err.stack);
+    });
+
     for(var i=0, j=args.length; i<j; ++i){
       switch(args[i]){
         case '-h':
