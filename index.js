@@ -9,7 +9,7 @@ var
 function _loadModules(context, config, keys, cb){
   if (0 == keys.length) { cb(null, context); return; }
   var key = keys.pop(), val = config[key];
-  require(__dirname+'/lib/'+val.mod).init(val,function(err, module){
+  require(__dirname+'/lib/dev/'+val.mod).init(val,function(err, module){
     context[key] = module;
     _loadModules(context, config, keys, cb);
   });
