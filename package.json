@@ -1,27 +1,26 @@
-{ 
-  "name" :            "pico"
-  , "description" :     "A node.js game server"
-  , "keywords" :        ["async","game","server"]
-  , "version" :         "0.0.1-12-26"
-  , "author" :          "Darren Liew <ldarren@gmail.com>"
-  , "repository" :    { 
-    "type" :  "git"
-    , "url" :   "http://github.com/ldarren/pico.git" }
-  , "dependencies":   {
-    "mongodb": ""
-    , "noxmox": ""
-    , "formidable": ""
-    , "memcached": ""}
-  , "bugs" :          { 
-    "mail" :  "ldarren@gmail.com"
-    , "url" :   "http://github.com/ldarren/pico/issues" }
-  , "os" :            [ "linux"
-                      , "darwin"
-                      , "freebsd" ]
-  , "main":             "./index"
-  , "directories" :   { "lib" : "./lib" }
-  , "engines" :       { "node" : ">=0.4.0" }
-  , "scripts": { "install" : "node install.js" }
-  , "licenses" :    [ { "type" :  "Apache License, Version 2.0"
-  , "url" :   "http://www.apache.org/licenses/LICENSE-2.0" } ]
+{
+  "name": "pico",
+  "description": "A node.js game server",
+  "keywords": ["async","game","server"],
+  "version": "0.0.2-03-16",
+  "author": "Darren Liew <ldarren@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/ldarren/pico.git" },
+  "dependencies": {
+    "mongodb": "",
+    "noxmox": "",
+    "formidable": "",
+    "memcached": ""},
+  "bugs": {
+    "mail": "ldarren@gmail.com",
+    "url": "http://github.com/ldarren/pico/issues" },
+  "os": ["linux", "darwin", "freebsd" ],
+  "main": "./index",
+  "directories": { "lib" : "./lib" },
+  "engines": { "node" : ">=0.4.0" },
+  "scripts": { "install" : "node install.js" },
+  "licenses": [ { "type" :  "Apache License, Version 2.0",
+  "url": "http://www.apache.org/licenses/LICENSE-2.0" } ]
 }
+
