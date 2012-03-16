@@ -2,8 +2,7 @@ var
   hash = require('mhash').hash,
   client = null,
   expiryActive = 600, // keep record for 10 mins, only 5 min data are needed
-  expireMsg = 86400,
-  date = new Date();
+  expireMsg = 86400;
 
 exports.setup = function(context, cb){
   client = context.redis_rooms.conn;
@@ -12,13 +11,13 @@ exports.setup = function(context, cb){
 };
 
 function key(roomId){
-  return roomId+':'+date.getMinutes();
+  return roomId+':'+(new Date).getMinutes();
 }
 
 function keys(roomId){
   var
     keys = [],
-    m = date.getMinutes();
+    m = (new Date).getMinutes();
 
   for (var i=0; i<5; ++i){
     keys.push(roomId+':'+((m-i)%60));
