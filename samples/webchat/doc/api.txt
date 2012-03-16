@@ -1,0 +1,3 @@
+users/create    POST    name=USER_NAME                  {session:SESSION_ID}
+users/auth      POST    session=SESSION_ID              {name:USER_NAME}
+users/send      POST    session=SESSION_ID&msg=MESSAGE  {name:USER_NAME,msg:MESSAGE}

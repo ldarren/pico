@@ -1,0 +1,30 @@
+div.list {
+  font-family:tahoma;
+  font-size: 12px;
+  color: black;
+  border: 1px teal solid;
+  overflow-y: scroll;
+}
+div#userBox{
+  height: 25px;
+  width: 400px;
+  float: top;
+}
+div#roomBox{
+  height: 225px;
+  width: 150px;
+  float: left;
+}
+div#chatBox{
+  height: 225px;
+  width: 400px;
+  float: left;
+}
+div#msgBox{
+  height: 25px;
+  width: 400px;
+  float: bottom;
+}
+.msg{
+  display: block;
+}

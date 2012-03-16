@@ -1,0 +1,22 @@
+{
+  "web": {
+    "mod":"web",
+    "host":null,
+    "port":1337,
+    "debug":1
+  },
+  "redis_users": {
+    "mod":"redis",
+    "host":"localhost",
+    "port":6379,
+    "db":0,
+    "options":{}
+  },
+  "redis_rooms": {
+    "mod":"redis",
+    "host":"localhost",
+    "port":6379,
+    "db":1,
+    "options":{}
+  }
+}

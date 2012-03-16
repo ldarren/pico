@@ -1,0 +1,3 @@
+exports.REQ = {
+  MSG: 'msg'
+}
