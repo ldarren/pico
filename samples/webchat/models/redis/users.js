@@ -10,7 +10,7 @@ const
   F_SESS = 's';
 
 exports.setup = function(context, cb){
-  client = context.redis_users.conn;
+  client = context.redis_users;
 
   cb();
 }

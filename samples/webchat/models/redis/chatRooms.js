@@ -5,7 +5,7 @@ var
   expireMsg = 86400;
 
 exports.setup = function(context, cb){
-  client = context.redis_rooms.conn;
+  client = context.redis_rooms;
 
   cb();
 };
