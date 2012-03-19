@@ -2,16 +2,16 @@ pico node.js game server framework. it is aim to be a simple and fast game serve
 
 ## Installation
 Recommended folder structure
--+
- |
- +-pico
- |
- +-YOUR PROJECT
-   |
-   +-actions
-   +-models
-   +-config
-   +-index.js
+    -+
+     |
+     +-pico
+     |
+     +-YOUR PROJECT
+       |
+       +-actions
+       +-models
+       +-config
+       +-index.js
 
 ### Setup configuration file
 
