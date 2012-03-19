@@ -18,10 +18,10 @@ Recommended folder structure
 ### Setup actions
 all actions script files should be resided in actions folder, create an index.js at the folder to load all actions. simplest way load all is as follow:
 
-  module.exports = [
-    require('./action1'),
-    require('./action2')
-  ];
+    module.exports = [
+        require('./action1'),
+        require('./action2')
+    ];
 
 ### Setup models
 
