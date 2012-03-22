@@ -1,3 +1,6 @@
+/**
+ * Model of users redis database
+ */
 var
   util = require('util'),
   client = null;
@@ -18,6 +21,7 @@ exports.setup = function(context, cb){
 function userKey(sessionId){ return 'u:'+sessionId;}
 function queueKey(sessionId){ return 'q:'+sessionId;}
 
+// write user session
 exports.set = function(sessionId, name, life, cb){
   if (!sessionId) return cb(ERROR_INVALID);
   var key = userKey(sessionId);
@@ -28,6 +32,7 @@ exports.set = function(sessionId, name, life, cb){
   });
 }
 
+// read user session
 exports.get = function(sessionId, cb){
   if (!sessionId) return cb(ERROR_INVALID);
   client.hmget(userKey(sessionId), F_NAME, F_SESS, function(err, res){
@@ -37,6 +42,7 @@ exports.get = function(sessionId, cb){
   });
 }
 
+// broadcast message to users
 exports.broadcast = function(msg, sessions, cb){
 console.log('users.broadcast msg[%s] sessions[%s]',msg, util.inspect(sessions));
   if (sessions.length <= 0) return cb();
@@ -54,7 +60,8 @@ console.log('users.broadcast exec called [%s]',util.inspect(err));
     return cb(err);
   });
 }
-
+ 
+// a singular version of broadcast function (not in use)
 exports.pushMsg = function(sessionId, data, cb){
   if (!sessionId) return cb(ERROR_INVALID);
   var key = queueKey(sessionId);
@@ -67,6 +74,7 @@ exports.pushMsg = function(sessionId, data, cb){
   });
 }
 
+// get all messages from user's message queue
 exports.popMsgs = function(sessionId, cb){
 console.log('users.popMsgs sessionId[%d]', sessionId);
   if (!sessionId) return cb(ERROR_INVALID);
@@ -86,6 +94,7 @@ console.log('users.popMsgs data[%s]', util.inspect(data));
   });
 }
 
+// count message queue length
 exports.countMsg = function(sessionId, cb){
   if (!sessionId) return cb(ERROR_INVALID);
   client.llen(queueKey(sessionId), function(err, len){
