@@ -21,8 +21,8 @@ name: <input type="text" name="name"/>
 <div id="msgBox">
 <form id="formMsg" method="post" action="http://107.20.154.29:1337/users/chat">
 <input type="hidden" name="session" value="SESSION_ID"/>
-msg: <input type="text" name="msg"/>
-<input type="submit" value="send"/>
+<label for=msg>msg:</label> <input type=text name=msg placeholder="type message here..." required />
+<input type=submit value=send />
 </form>
 </div>
 
