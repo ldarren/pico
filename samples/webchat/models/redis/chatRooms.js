@@ -4,28 +4,25 @@
  */
 var
   hash = require('mhash').hash,
-  client = null,
-  expiryActive = 600, // keep record for 10 mins, only 5 min data are needed
-  expireMsg = 86400;
+  client = null;
+
+const
+  EXPIRY_ACTIVE = 60 * 10, // keep record for 10 mins, only 5 min data are needed
+  EXPIRY_MSG = 60 * 60 * 24 * 1;
 
 exports.setup = function(context, cb){
   client = context.redis_rooms;
-
-  cb();
+  return cb();
 };
 
-function key(roomId){
-  return roomId+':'+(new Date).getMinutes();
-}
+function key(roomId){ return roomId+':'+(new Date).getMinutes();}
 
 function keys(roomId){
   var
-    keys = [],
-    m = (new Date).getMinutes();
+  keys = [],
+  m = (new Date).getMinutes();
 
-  for (var i=0; i<5; ++i){
-    keys.push(roomId+':'+((m-i)%60));
-  }
+  for (var i=0; i<5; ++i){ keys.push(roomId+':'+((60+m-i)%60)); }
   return keys;
 }
 
@@ -37,12 +34,10 @@ function keys(roomId){
  */
 exports.setActive = function(roomId, userInfo, cb){
   var k = key(roomId);
-  client.sadd(k, JSON.stringify(userInfo), function(err, res){
-    if(err) return cb(err);
-    client.expire(k, expiryActive, function(err, res){
-      return cb(err, res);
-    });
-  });
+  client.multi()
+  .sadd(k, JSON.stringify(userInfo))
+  .expire(k, EXPIRY_ACTIVE)
+  .exec(cb);
 }
 
 /**
@@ -51,9 +46,7 @@ exports.setActive = function(roomId, userInfo, cb){
  * @return 
  */
 exports.getActives = function(roomId, cb){
-  client.sunion(keys(roomId), function(err, res){
-    return cb(err, res);
-  });
+  client.sunion(keys(roomId), cb);
 }
 
 /**
@@ -64,7 +57,7 @@ exports.getActives = function(roomId, cb){
  */
 exports.setMsg = function(roomId, msg, cb){
   var key = hash('md5', msg+roomId);
-  client.setex(key, expireMsg, msg, function(err){
+  client.setex(key, EXPIRY_MSG, msg, function(err){
     return cb(err, key);
   });
 }
@@ -79,9 +72,7 @@ exports.getMsgs = function(keys, cb){
   if (l <= 0) return cb();
   var multi = client.multi();
   while(l--){ multi.get(keys[l]); }
-  multi.exec(function(err, msgs){
-    return cb(err, msgs);
-  });
+  multi.exec(cb);
 }
 
 /**
@@ -90,7 +81,5 @@ exports.getMsgs = function(keys, cb){
  * @return 
  */
 exports.getMsg = function(key, cb){
-  client.get(key, function(err, msg){
-    return cb(err, msg);
-  });
+  client.get(key, cb);
 }
