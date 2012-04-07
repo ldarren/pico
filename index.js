@@ -5,6 +5,7 @@ var
   path = require('path'),
   util = require('util'),
   cluster = require('cluster');
+  BaseError = require('./lib/errors/base');
 
 function _loadModules(context, config, keys, cb){
   if (0 == keys.length) { cb(null, context); return; }
@@ -36,7 +37,7 @@ exports.createContext = function (args, cb){
     var 
       config = null,
       error = null,
-      context = {homeDir:path.dirname(args[1])+'/'};
+      context = {homeDir:path.dirname(args[1])+'/', BaseError:BaseError};
 
     process.on('uncaughtException', function(err){
       console.log("PICO Uncaught Exception:\n %s", err.stack);
@@ -55,7 +56,7 @@ exports.createContext = function (args, cb){
           var
             cfgFile = args[++i];
           config = require(context.homeDir+cfgFile);
-          _loadModules(context, config, Object.keys(config), function(err, context){
+          _loadModules(context, config.lib, Object.keys(config.lib), function(err, context){
             error = err;
             context.config = config;
             return cb(error, context);

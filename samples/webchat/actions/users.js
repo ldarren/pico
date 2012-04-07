@@ -7,7 +7,7 @@ const
   ROOM_ID = 'rm';
 
 function makeName (req, res, product, cb){
-  product.body = 'webchat';
+  product.body = 'pl.hat';
   cb(null, product);
 }
 
@@ -133,17 +133,17 @@ function makeEchoMsg(req, res, product, cb){
 
 exports.setup = function(context, cb){
   var
-    web = context.web;
+  pl = context.pipeline;
 
   userSessions = require('../models/redis/users');
   chatRooms = require('../models/redis/chatRooms');
 
-  web.setGETRoute('/who', [makeName]);
+  pl.setGETRoute('/who', [makeName]);
   
-  web.setPOSTRoute('/users/create', [web.makeParams, validUserCreate, makeNewUser, setSession, setActive]);
-  web.setPOSTRoute('/users/auth', [web.makeParams, validUsersAuth, getSession, setActive, makeAuth]);
-  web.setPOSTRoute('/users/chat', [web.makeParams, validUsersSend, getSession, setActive, broadcast, getBuffer, makeEchoMsg]);
-  web.setGETRoute('/users/list', [web.makeParams, validUsersAuth, getSession, getUserList]);
+  pl.setPOSTRoute('/users/create', [pl.makeParams, validUserCreate, makeNewUser, setSession, setActive]);
+  pl.setPOSTRoute('/users/auth', [pl.makeParams, validUsersAuth, getSession, setActive, makeAuth]);
+  pl.setPOSTRoute('/users/chat', [pl.makeParams, validUsersSend, getSession, setActive, broadcast, getBuffer, makeEchoMsg]);
+  pl.setGETRoute('/users/list', [pl.makeParams, validUsersAuth, getSession, getUserList]);
 
   cb();
 }
