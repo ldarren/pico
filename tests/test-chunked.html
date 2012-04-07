@@ -1,0 +1,14 @@
+<script type="text/javascript">
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'http://107.20.154.29:1337/', true);
+
+xhr.onreadystatechange = function(e) {
+    console.dir(this);
+    if (this.readyState === 3 && this.status === 200) {
+      var msgs = this.responseText.split(';');
+      console.log(msgs[msgs.length-2]);
+    }
+};
+
+xhr.send();
+</script>
