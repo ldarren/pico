@@ -6,32 +6,33 @@ var
 const
   ROOM_ID = 'rm';
 
-function makeName (req, res, product, cb){
+function makeName (client, product, cb){
   product.body = 'pl.hat';
   cb(null, product);
 }
 
-function validUserCreate(req, res, product, cb){
+function validUserCreate(client, product, cb){
+  console.log('product [%s]',util.inspect(product));
   if (!product.params.name)
     return cb({code:403,head:{}, body:{msg:'No enough parameters'}}, null);
   return cb(null, product);
 }
 
-function validUsersAuth(req, res, product, cb){
+function validUsersAuth(client, product, cb){
   if (!product.params.session)
     return cb({code:403,head:{}, body:{msg:'No enough parameters'}}, null);
   product.params.session = parseInt(product.params.session);
   return cb(null, product);
 }
 
-function validUsersSend(req, res, product, cb){
+function validUsersSend(client, product, cb){
   if (!product.params.session || !product.params.msg)
     return cb({code:403,head:{}, body:{msg:'No enough parameters'}}, null);
   product.params.session = parseInt(product.params.session);
   return cb(null, product);
 }
 
-function getSession(req, res, product, cb){
+function getSession(client, product, cb){
   userSessions.get(product.params.session, function(err, reply){
     if (err) return cb({code:500,head:{},body:{msg:err}}, null);
 
@@ -44,7 +45,7 @@ console.log('getSession: '+util.inspect(product));
   });
 }
 
-function setSession(req, res, product, cb){
+function setSession(client, product, cb){
   var
     s = product.session;
   userSessions.set(s.session, s.name, 3600, function(err, reply){
@@ -53,7 +54,7 @@ function setSession(req, res, product, cb){
   });
 }
 
-function setActive(req, res, product, cb){
+function setActive(client, product, cb){
 console.log('setActive: session: '+util.inspect(product.session));
   if (!product.session) return cb(null, product);
   chatRooms.setActive(ROOM_ID, product.session, function(err, reply){
@@ -63,7 +64,7 @@ console.log('setActive: '+util.inspect(reply));
   });
 }
 
-function getUserList(req, res, product, cb){
+function getUserList(client, product, cb){
   chatRooms.getActives(ROOM_ID, function(err, reply){
     if (err) return cb({code:500,head:{},body:{msg:err.message}}, null);
     product.body['list'] = reply;
@@ -73,7 +74,7 @@ console.log('getUserList: '+util.inspect(product));
   });
 }
 
-function broadcast(req, res, product, cb){
+function broadcast(client, product, cb){
   var 
     p = product.params,
     s = product.session;
@@ -96,7 +97,7 @@ function broadcast(req, res, product, cb){
   });
 }
 
-function getBuffer(req, res, product, cb){
+function getBuffer(client, product, cb){
   userSessions.popMsgs(product.session.session, function(err, ids){
     if (err) return cb({code:500,head:{},body:{msg:err.message}}, null);
 console.log('getBuffer.ids: '+util.inspect(ids));
@@ -109,19 +110,19 @@ console.log('getBuffer.msgs: '+util.inspect(msgs));
   });
 }
 
-function makeNewUser(req, res, product, cb){
+function makeNewUser(client, product, cb){
   product.body = {name:product.params.name, session:Math.floor((Math.random()*400000))};
   product.session = product.body;
   cb(null, product);
 }
 
-function makeAuth(req, res, product, cb){
+function makeAuth(client, product, cb){
   product.body = {name:product.session.name};
   console.log('makeAuth [%s]', util.inspect(product.body));
   cb(null, product);
 }
 
-function makeEchoMsg(req, res, product, cb){
+function makeEchoMsg(client, product, cb){
   console.log('makeEchoMsg1: '+util.inspect(product));
   var msgs = product.params.msgs || [];
   msgs = msgs.reverse();
