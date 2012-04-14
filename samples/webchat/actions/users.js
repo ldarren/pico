@@ -7,7 +7,7 @@ const
   ROOM_ID = 'rm';
 
 function makeName (client, product, cb){
-  product.body = 'pl.hat';
+  product.body = 'Sample Webchat';
   cb(null, product);
 }
 

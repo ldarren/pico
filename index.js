@@ -2,10 +2,11 @@
  * main module. read config, init module
  */
 var
-  path = require('path'),
-  util = require('util'),
-  cluster = require('cluster');
-  BaseError = require('./lib/errors/base');
+path = require('path'),
+util = require('util'),
+cluster = require('cluster'),
+Errors = require('./lib/errors/'),
+Models = require('./lib/models/');
 
 function _loadModules(context, config, keys, cb){
   if (0 == keys.length) { cb(null, context); return; }
@@ -37,7 +38,7 @@ exports.createContext = function (args, cb){
     var 
       config = null,
       error = null,
-      context = {homeDir:path.dirname(args[1])+'/', BaseError:BaseError};
+      context = {homeDir:path.dirname(args[1])+'/'};
 
     process.on('uncaughtException', function(err){
       console.log("PICO Uncaught Exception:\n %s", err.stack);
@@ -47,14 +48,14 @@ exports.createContext = function (args, cb){
       switch(args[i]){
         case '-h':
         {
-          console.log('usage: node index.js -c CONFIG_FILE');
+          console.log('usage: %s %s -c CONFIG_FILE', args[0] args[1]);
           //process.exit(0);
           break;
         }
         case '-c':
         {
-          var
-            cfgFile = args[++i];
+          var cfgFile = args[++i];
+
           config = require(context.homeDir+cfgFile);
           _loadModules(context, config.lib, Object.keys(config.lib), function(err, context){
             error = err;
@@ -81,3 +82,7 @@ exports.setup = function(context, cb){
     });
   });
 }
+
+// exports classes
+exports.Errors = Errors;
+exports.Models = Models;
