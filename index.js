@@ -48,7 +48,7 @@ exports.createContext = function (args, cb){
       switch(args[i]){
         case '-h':
         {
-          console.log('usage: %s %s -c CONFIG_FILE', args[0] args[1]);
+          console.log('usage: %s %s -c CONFIG_FILE', args[0], args[1]);
           //process.exit(0);
           break;
         }

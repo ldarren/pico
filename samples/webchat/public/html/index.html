@@ -2,11 +2,15 @@
 <html>
 <head>
 <title>Web Chat</title>
-<script type="text/javascript" langauge="javascript" src="../js/jquery-1.7.1.js"></script>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
 <script type="text/javascript" langauge="javascript" src="../js/chat.js"></script>
 <link rel="stylesheet" type="text/css" href="../css/main.css">
 </head>
-<body>
+<body onload="javascript:onReady.call(this, event)">
+
+<div id=top>WebChat</div>
+
+<div id=content>
 
 <div id="userBox">
 <form id="formUser" method="post" action="http://107.20.154.29:1337/users/create">
@@ -30,6 +34,9 @@
 <form id="formRefresh" method="GET" action="http://107.20.154.29:1337/users/list">
 <input type="hidden" name="session" value="SESSION_ID"/>
 <input type="submit" value="refresh"/>
+
+</div>
+
 </form>
 </div>
 

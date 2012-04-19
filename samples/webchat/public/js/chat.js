@@ -1,37 +1,49 @@
 var
-  domain = 'http://107.20.154.29:1337',
-  userBox = null,
-  chatBox = null,
-  roomBox = null,
-  cookieObj = null;
+DOMAIN = 'http://107.20.154.29:1337/',
+TIMEOUT = 1000 * 5, // 5 sec timeout
+userBox = null,
+chatBox = null,
+roomBox = null,
+cookieObj = null;
 
 /*
  * to get form's field use:
  * span.innerHTML = self.elements['msg'].value;
  */
-function post(url, data, ok, ko){
-  console.log('data[%s]',data);
-  $.ajax({
-    url: url,
-    data: data,
-    success: ok,
-    error: ko
-  });
-}
+ajax = function(method, domain, params, timeout, cb){
+  var
+  xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP'),
+  post = 'post' === method;
 
-function get(url, data, cb){
-  $.ajax({
-    type: 'GET',
-    url: url,
-    data: data,
-    success: cb
-  });
-}
+  xhr.timeout = timeout || TIMEOUT;
 
-function setCookie(obj, days){
+  if (!post){
+    domain += '?'+params;
+    params = null;
+  }
+
+  xhr.open(method, domain, true);
+
+  if (post){
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Content-length', params.length);
+    xhr.setRequestHeader('Connection', 'close');
+  }
+
+  xhr.send(params);
+  xhr.onreadystatechange=function(){
+    if (4 === xhr.readyState){
+      if (cb){
+        return cb(xhr.status, xhr.responseText);
+      }
+    }
+  }
+},
+
+setCookie = function(obj, days){
   var 
-    json = JSON.stringify(obj),
-    cookie = 'd='+json;
+  json = JSON.stringify(obj),
+  cookie = 'd='+json;
 
   if (days){
     var expiry = new Date();
@@ -40,33 +52,30 @@ function setCookie(obj, days){
   }
   console.log('setCookie: '+cookie);
   document.cookie=cookie;
-}
+},
 
-function getCookie(){
+getCookie = function(){
   if (document.cookie.length < 5)
     return null;
 
-  var 
-    kvp = document.cookie.split('=');
+  var kvp = document.cookie.split('=');
   console.log('getCookie: '+document.cookie);
   return JSON.parse(kvp[1]);
-}
+},
 
-$(document).ready(function(){
+onReady = function(){
+
+  if (navigator.userAgent.match(/Mobile/i)) {
+    window.scrollTo(0,1);
+  }
     
-  $.ajaxSetup({
-    type: 'POST',
-    timeout: 5 * 1000, // timeout 5 sec
-    dataType: 'json'
-  });
-
   cookie = getCookie();
-  if(cookie) post(domain+'/users/auth', 'session='+cookie.session, onAuthSuccess);
+  if(cookie) post(DOMAIN+'/users/auth', 'session='+cookie.session, onAuthSuccess);
 
   userBox = document.getElementById('userBox');
   chatBox = document.getElementById('chatBox');
   roomBox = document.getElementById('roomBox');
-  $("#formUser").submit(function(e){
+/*  $("#formUser").submit(function(e){
     e.preventDefault();
     post(this.action, $(this).serialize(), onCreateSuccess, onCreateFail);
   });
@@ -77,22 +86,56 @@ $(document).ready(function(){
   $("#formRefresh").submit(function(e){
     e.preventDefault();
     get(this.action, $(this).serialize(), onUpdateRoomSuccess);
-  });
-});
+  });*/
+},
 
-function onCreateSuccess(data){
+onSumit = function(evt){
+  var
+  inputs = this.getElementsByTagName('input'),
+  input,
+  l = inputs.length,
+  params = '';
+
+  while(l--){
+    input = inputs[l];
+    if (!input || !input.name || !input.value) continue;
+    if (0===l)
+      params += input.name +'='+input.value;
+      else
+        params += input.name +'='+input.value+'&';
+  }
+
+  ajax(this.method, this.action, params, TIMEOUT, function(status, data){
+    if (200 === status){
+      var
+      msgs = JSON.parse(data),
+      msg,
+      l = msgs.length;
+
+      while(l--){
+        msg = msgs.pop();
+        routes[msg.act](msg);
+      }
+    }else{
+      console.err(data);
+    }
+  });
+
+},
+
+onCreateSuccess = function(data){
   console.log('onCreateSuccess');
   cookie = data;
   onAuthSuccess(data);
 
   setCookie(data, 1);
-}
+},
 
-function onCreateFail(jqXHR, textStatus){
+onCreateFail = function(jqXHR, textStatus){
   alert(textStatus);
-}
+},
 
-function onAuthSuccess(data){
+onAuthSuccess = function(data){
   console.log('onAuthSuccess');
   console.dir(data);
   if (!data.name) return console.log('expired!');
@@ -103,10 +146,10 @@ function onAuthSuccess(data){
   var form = document.getElementById('formRefresh');
   form.elements['session'].value = cookie.session;
 
-  get(domain+'/users/list', 'session='+cookie.session, onUpdateRoomSuccess);
-}
+  get(DOMAIN+'/users/list', 'session='+cookie.session, onUpdateRoomSuccess);
+},
 
-function onChatSuccess(data){
+onChatSuccess = function(data){
   console.log('onChatSuccess!');
   console.dir(data);
   var
@@ -122,9 +165,9 @@ function onChatSuccess(data){
     chatBox.appendChild(span);
   }
   chatBox.scrollTop = chatBox.scrollHeight;
-}
+},
 
-function onUpdateRoomSuccess(data){
+onUpdateRoomSuccess = function(data){
   console.log('onUpdateRoomSuccess!');
   console.dir(data);
   var
@@ -141,4 +184,4 @@ function onUpdateRoomSuccess(data){
     span.innerHTML = user.name;
     roomBox.appendChild(span);
   }
-}
+};
