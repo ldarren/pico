@@ -66,7 +66,7 @@ getCookie = function(){
 onReady = function(){
 
   if (navigator.userAgent.match(/Mobile/i)) {
-    window.scrollTo(0,1);
+    setTimeout(function(){ window.scrollTo(0,1);},0);
   }
     
   cookie = getCookie();
