@@ -31,14 +31,13 @@ exports.createContext = function (args, cb){
       cluster.fork();
     }
     cluster.on('death', function(worker) {
-      console.log('worker ' + worker.pid + ' died. restart...');
+      console.log('worker %d died. restarting...', worker.pid);
       cluster.fork();
     });
   }else{
     var 
-      config = null,
-      error = null,
-      context = {homeDir:path.dirname(args[1])+'/'};
+    config, error,
+    context = {homeDir:path.dirname(args[1])+'/'};
 
     process.on('uncaughtException', function(err){
       console.log("PICO Uncaught Exception:\n %s", err.stack);
