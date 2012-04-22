@@ -33,9 +33,7 @@ ajax = function(method, domain, params, timeout, cb){
   xhr.send(params);
   xhr.onreadystatechange=function(){
     if (4 === xhr.readyState){
-      if (cb){
-        return cb(xhr.status, xhr.responseText);
-      }
+      if (cb) return cb(xhr.status, xhr.responseText);
     }
   }
 },

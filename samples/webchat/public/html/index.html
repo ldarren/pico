@@ -3,8 +3,8 @@
 <head>
 <title>Web Chat</title>
 <meta name="viewport" content="width=device-width, user-scalable=no" />
-<script type="text/javascript" langauge="javascript" src="../js/chat.js"></script>
-<link rel="stylesheet" type="text/css" href="../css/main.css">
+<script src="../js/chat.js"></script>
+<link rel="stylesheet" href="../css/main.css">
 </head>
 <body onload="javascript:onReady.call(this, event)">
 
@@ -15,7 +15,6 @@
 <div id="userBox">
 <form id="formUser" method="post" action="http://107.20.154.29:1337/users/create">
 <label for=name>name</label><input id=name type=text name=name placeholder="user name" required />
-<input type="submit" value="create"/>
 </form>
 </div>
 
