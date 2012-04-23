@@ -26,8 +26,6 @@ ajax = function(method, domain, params, timeout, cb){
 
   if (post){
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('Content-length', params.length);
-    xhr.setRequestHeader('Connection', 'close');
   }
 
   xhr.send(params);
@@ -87,7 +85,7 @@ onReady = function(){
   });*/
 },
 
-onSumit = function(evt){
+submit = function(evt){
   var
   inputs = this.getElementsByTagName('input'),
   input,
@@ -115,7 +113,7 @@ onSumit = function(evt){
         routes[msg.act](msg);
       }
     }else{
-      console.err(data);
+      console.error(data);
     }
   });
 
