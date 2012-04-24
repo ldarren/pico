@@ -2,19 +2,19 @@
  * Model of users redis database
  */
 var
-  util = require('util'),
-  client = null;
+util = require('util'),
+client = null;
 
 const
-  EXPIRY = 3600,
-  Q_SIZE = 5,
-  ERROR_INVALID = 'invalid session id',
-  F_NAME = 'n',
-  F_SESS = 's';
+EXPIRY = 3600,
+Q_SIZE = 5,
+ERROR_INVALID = 'invalid session id',
+F_NAME = 'n',
+F_SESS = 's';
 
 exports.setup = function(context, cb){
   client = context.redis_users;
-
+console.log('redis_users[%s]',util.inspect(client));
   cb();
 }
 

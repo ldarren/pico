@@ -8,12 +8,12 @@ cluster = require('cluster'),
 Errors = require('./lib/errors/'),
 Models = require('./lib/models/');
 
-function _loadModules(context, config, keys, cb){
+function _loadModules(context, app, config, keys, cb){
   if (0 == keys.length) { cb(null, context); return; }
   var key = keys.pop(), val = config[key];
-  require(__dirname+'/lib/dev/'+val.mod).init(val,function(err, module){
+  require(__dirname+'/lib/dev/'+val.mod).init(app, val,function(err, module){
     context[key] = module;
-    _loadModules(context, config, keys, cb);
+    _loadModules(context, app, config, keys, cb);
   });
 }
 
@@ -56,7 +56,7 @@ exports.createContext = function (args, cb){
           var cfgFile = args[++i];
 
           config = require(context.homeDir+cfgFile);
-          _loadModules(context, config.lib, Object.keys(config.lib), function(err, context){
+          _loadModules(context, config.app, config.lib, Object.keys(config.lib), function(err, context){
             error = err;
             context.config = config;
             return cb(error, context);
@@ -75,10 +75,8 @@ exports.createContext = function (args, cb){
 exports.setup = function(context, cb){
   var root = context.homeDir;
   _loadElements(context, require(root+'/models'), function(err, elements){
-    if (err) return cb(err, elements);
-    _loadElements(context, require(root+'/actions'), function(err, elements){
-      if (err) return cb(err, elements);
-    });
+    if (err) return cb(err);
+    _loadElements(context, require(root+'/actions'), cb);
   });
 }
 
