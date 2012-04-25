@@ -11,7 +11,7 @@ const
   EXPIRY_MSG = 60 * 60 * 24 * 1;
 
 exports.setup = function(context, cb){
-  client = context.redis_rooms;
+  client = context.redis_rooms.conn;
   return cb();
 };
 

@@ -13,8 +13,7 @@ F_NAME = 'n',
 F_SESS = 's';
 
 exports.setup = function(context, cb){
-  client = context.redis_users;
-console.log('redis_users[%s]',util.inspect(client));
+  client = context.redis_users.conn;
   cb();
 }
 
@@ -24,7 +23,9 @@ function queueKey(sessionId){ return 'q:'+sessionId;}
 // write user session
 exports.set = function(sessionId, name, life, cb){
   if (!sessionId) return cb(ERROR_INVALID);
+
   var key = userKey(sessionId);
+
   client.hmset(key, F_NAME, name, F_SESS, sessionId, function(err, res){
     client.expire(key, life || EXPIRY, function(err){
       return cb(err ? err.message : err, res);
@@ -44,21 +45,17 @@ exports.get = function(sessionId, cb){
 
 // broadcast message to users
 exports.broadcast = function(msg, sessions, cb){
-console.log('users.broadcast msg[%s] sessions[%s]',msg, util.inspect(sessions));
   if (sessions.length <= 0) return cb();
 
   var 
-    multi = client.multi(),
-    key = null;
-console.log('users.broadcast multi called [%d]',sessions.length);
+  multi = client.multi(),
+  key = null;
+
   for(var i=0,j=sessions.length;i<j;++i){
     key = queueKey(sessions[i]);
     multi.lpush(key, msg).ltrim(key,0,Q_SIZE);
   }
-  multi.exec(function(err){
-console.log('users.broadcast exec called [%s]',util.inspect(err));
-    return cb(err);
-  });
+  multi.exec(cb);
 }
  
 // a singular version of broadcast function (not in use)
