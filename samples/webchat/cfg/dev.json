@@ -1,5 +1,7 @@
 {
   "app":{
+    "actionPath": "/actions",
+    "modelPath": "/models"
   },
   "lib":{
     "pipeline": {

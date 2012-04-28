@@ -1,6 +1,11 @@
 /*
  * main module. read config, init module
  */
+const
+PATH_DRIVERS = '/lib/drivers/',
+PATH_ACTIONS_DEFAULT = '/actions',
+PATH_MODELS_DEFAULT = '/models';
+
 var
 path = require('path'),
 util = require('util'),
@@ -11,7 +16,7 @@ Models = require('./lib/models/');
 function _loadModules(context, app, config, keys, cb){
   if (0 == keys.length) { cb(null, context); return; }
   var key = keys.pop(), val = config[key];
-  require(__dirname+'/lib/dev/'+val.mod).init(app, val,function(err, module){
+  require(__dirname+PATH_DRIVERS+val.mod).init(app, val,function(err, module){
     context[key] = module;
     _loadModules(context, app, config, keys, cb);
   });
@@ -40,7 +45,7 @@ exports.createContext = function (args, cb){
     context = {homeDir:path.dirname(args[1])+'/'};
 
     process.on('uncaughtException', function(err){
-      console.log("PICO Uncaught Exception:\n %s", err.stack);
+      console.log('PICO Uncaught Exception:\n %s', err.stack);
     });
 
     for(var i=0, j=args.length; i<j; ++i){
@@ -73,10 +78,15 @@ exports.createContext = function (args, cb){
 }
 
 exports.setup = function(context, cb){
-  var root = context.homeDir;
-  _loadElements(context, require(root+'/models'), function(err, elements){
+  var
+  root = context.homeDir,
+  appCfg = context.config.app,
+  actions = appCfg.actionPath || PATH_ACTIONS_DEFAULT,
+  models = appCfg.modelPath || PATH_MODELS_DEFAULT;
+
+  _loadElements(context, require(root+models), function(err, elements){
     if (err) return cb(err);
-    _loadElements(context, require(root+'/actions'), cb);
+    _loadElements(context, require(root+actions), cb);
   });
 }
 
