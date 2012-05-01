@@ -2,30 +2,25 @@
 <head>
 <script type="text/javascript">
 var
-xhr = new XMLHttpRequest(),
+xhrIn = new XMLHttpRequest(),
+xhrOut = new XMLHttpRequest(),
 pos = 0,
-queue = [],
-send = function(){
-  if (!queue.length) return;
-  xhr.open('GET', 'http://107.20.154.29:1337/?data='+JSON.stringify(queue), true);
-  queue = [];
-  xhr.send();
+outbox = [],
+read = function(){
+  xhrIn.open('GET', 'http://107.20.154.29:1337/?role=i', true);
+  xhrIn.send();
+},
+write = function(){
+  if (!outbox.length) return;
+  xhrOut.open('GET', 'http://107.20.154.29:1337/?role=o&data='+JSON.stringify(outbox), true);
+  outbox = [];
+  xhrOut.send();
 },
 ajax = function(data){
-  queue.push(data);
-  if (0 === xhr.readyState || 4 === xhr.readyState){
-    send();
+  outbox.push(data);
+  if (0 === xhrOut.readyState || 4 === xhrOut.readyState){
+    write();
   }
-
-  xhr.onreadystatechange = function() {
-      if (this.readyState === 3 && this.status === 200) {
-        console.log(this.responseText.substring(pos));
-        pos = this.responseText.length;
-      }else if (this.readyState === 4){
-        pos = 0;
-        send();
-      }
-  };
 },
 submit = function(evt){
   var
@@ -37,19 +32,41 @@ submit = function(evt){
   while(l--){
     input = inputs[l];
     if (!input || !input.name || !input.value) continue;
-    params[input.name] = input.value;
+    params[input.name] = 'number' === input.type ? parseInt(input.value) : input.value;
   }
 
   ajax(params);
 };
+
+xhrOut.onreadystatechange = function() {
+    if (this.readyState === 4){
+      write();
+    }
+};
+xhrIn.onreadystatechange = function() {
+    if (this.readyState === 3 && this.status === 200) {
+      var
+      li = document.createElement('li');
+
+      li.innerHTML = this.responseText.substring(pos);
+      document.getElementById('output').appendChild(li);
+      
+      pos = this.responseText.length;
+    }else if (this.readyState === 4){
+      pos = 0;
+      read();
+    }
+};
+read();
 </script>
 </head>
 <body>
 <form> 
-<label for=param1>param1</label><input type=text name=param1 placeholder="param1" />
-<label for=param2>param2</label><input type=text name=param2 placeholder="param2" />
-<label for=param3>param3</label><input type=text name=param3 placeholder="param3" />
+<label for=count>count</label><input type=number name=count placeholder=count value=100 />
+<label for=msg>msg</label><input type=text name=msg placeholder=msg value=hello />
 <a href=javascript:{} onclick="submit.call(this.parentNode, event)">send</a>
 </form>
+<ul id=output>
+</ul>
 </body>
 </html>
