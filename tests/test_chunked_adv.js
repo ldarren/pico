@@ -5,11 +5,15 @@ http = require('http'),
 port = 1337,
 host = null,
 queue = [],
-connection = null,
+connections = {},
 output = [],
+
 id = setInterval(function(){
   var
-  data,load,temp=[];
+  data,temp=[],
+  keys = Object.keys(connections),
+  l = keys.length;
+
   while(queue.length){
     data = queue.pop();
     output.push(data.msg);
@@ -18,24 +22,42 @@ console.log('count<%s> msg<%s>',data.count, data.msg);
     if (data.count) temp.push(data);
   }
   queue = temp;
-  if (output.length && connection){
-    --connection.count;
-    load = JSON.stringify(output);
-    if (!connection.count){
-      connection.res.end(load);
-      connection = null;
-    }else{
-      connection.res.write(load);
+  if (output.length && l){
+    var
+    load = JSON.stringify(output),
+    k;
+
+    while(l--){
+      k = keys[l];
+      conn = connections[k];
+      --conn.count;
+      if (!conn.count){
+        conn.res.end(load);
+        delete connections[k];
+console.log('end uid<%s> count<%d> load<%s>',k, conn.count, load);
+      }else{
+        conn.res.write(load);
+console.log('send uid<%s> count<%d> load<%s>',k, conn.count, load);
+      }
     }
-console.log('send count<%s> load<%s>',connection.count, load);
     output=[];
   }
 }, 1000),
+
+dc = function(){
+console.log('dc uid<%s>',this.uid);
+  delete connections[this.uid];
+},
+
 server = http.createServer(function(req, res){
   var
   query = url.parse(req.url, true).query,
+  uid = query['uid'],
   role = query['role'],
   data;
+
+  res.uid = uid;
+  res.on('close', dc);
 
   res.writeHead(200, {
     'Content-Type': 'application/octet-stream',
@@ -51,8 +73,8 @@ server = http.createServer(function(req, res){
 console.log('received len<%d> data<%s> queue<%s>',data.length,util.inspect(data),util.inspect(queue));
       break;
     case 'i':
-      connection = {count:120, res:res};
-console.log('received connection');
+      connections[uid] = {count:30, res:res};
+console.log('received connection <%s>',uid);
       break;
   }
 });

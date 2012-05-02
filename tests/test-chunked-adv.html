@@ -7,12 +7,12 @@ xhrOut = new XMLHttpRequest(),
 pos = 0,
 outbox = [],
 read = function(){
-  xhrIn.open('GET', 'http://107.20.154.29:1337/?role=i', true);
+  xhrIn.open('GET', 'http://107.20.154.29:1337/?uid=darren&role=i', true);
   xhrIn.send();
 },
 write = function(){
   if (!outbox.length) return;
-  xhrOut.open('GET', 'http://107.20.154.29:1337/?role=o&data='+JSON.stringify(outbox), true);
+  xhrOut.open('GET', 'http://107.20.154.29:1337/?uid=darren&role=o&data='+JSON.stringify(outbox), true);
   outbox = [];
   xhrOut.send();
 },
@@ -62,7 +62,7 @@ read();
 </head>
 <body>
 <form> 
-<label for=count>count</label><input type=number name=count placeholder=count value=100 />
+<label for=count>count</label><input type=number name=count placeholder=count value=10 />
 <label for=msg>msg</label><input type=text name=msg placeholder=msg value=hello />
 <a href=javascript:{} onclick="submit.call(this.parentNode, event)">send</a>
 </form>
