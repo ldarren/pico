@@ -1,0 +1,72 @@
+<html>
+<head>
+<script type="text/javascript">
+var
+xhrIn = new XMLHttpRequest(),
+xhrOut = new XMLHttpRequest(),
+pos = 0,
+outbox = [],
+read = function(){
+  xhrIn.open('GET', 'http://107.20.154.29:1337/?uid=darren&role=i', true);
+  xhrIn.send();
+},
+write = function(){
+  if (!outbox.length) return;
+  xhrOut.open('GET', 'http://107.20.154.29:1337/?uid=darren&role=o&data='+JSON.stringify(outbox), true);
+  outbox = [];
+  xhrOut.send();
+},
+ajax = function(data){
+  outbox.push(data);
+  if (0 === xhrOut.readyState || 4 === xhrOut.readyState){
+    write();
+  }
+},
+submit = function(evt){
+  var
+  inputs = this.getElementsByTagName('input'),
+  input,
+  l = inputs.length,
+  params = {};
+
+  while(l--){
+    input = inputs[l];
+    if (!input || !input.name || !input.value) continue;
+    params[input.name] = 'number' === input.type ? parseInt(input.value) : input.value;
+  }
+
+  ajax(params);
+};
+
+xhrOut.onreadystatechange = function() {
+    if (this.readyState === 4){
+      write();
+    }
+};
+xhrIn.onreadystatechange = function() {
+    if (this.readyState === 3 && this.status === 200) {
+      var
+      li = document.createElement('li');
+
+      li.innerHTML = this.responseText.substring(pos);
+      document.getElementById('output').appendChild(li);
+      
+      pos = this.responseText.length;
+    }else if (this.readyState === 4){
+      pos = 0;
+      read();
+    }
+};
+read();
+</script>
+</head>
+<body>
+<form> 
+<label for=count>count</label><input type=number name=count placeholder=count value=10 />
+<label for=msg>msg</label><input type=text name=msg placeholder=msg value=hello />
+<a href=javascript:{} onclick="submit.call(this.parentNode, event)">send</a>
+</form>
+<ul id=output>
+</ul>
+</body>
+</html>
